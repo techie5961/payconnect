@@ -1,0 +1,44 @@
+ //  initiate deposit
+     public function InitiateDeposit(){
+        //return request()->input('amount');
+        $uniqid =uniqid('TRX');
+        if(request()->input('amount') < DB::table('products')->orderBy('price','asc')->first()->price){
+            return response()->json([
+                'message' => 'Minimum deposit is '.number_format(DB::table('products')->orderBy('price','desc')->first()->price,2).'',
+                'status' => 'error'
+            ]);
+        }
+        DB::table('transactions')->insert([
+            'uniqid' => strtoupper($uniqid),
+            'amount' => request()->input('amount'),
+            'class' => 'credit',
+            'type' => 'deposit',
+            'user_id' => Auth::guard('users')->user()->id,
+            'description' => 'Payconnect deposit',
+            'status' => 'initiated',
+            'updated' => Carbon::now(),
+            'date' => Carbon::now()
+        ]);
+        $paystack=Http::withToken(env('PSTCK_SECRET_KEY'))->post('https://api.paystack.co/transaction/initialize',[
+            'email' => Auth::guard('users')->user()->email,
+            'amount' => request()->input('amount'),
+            'currency' => 'NGN',
+            'reference' => $uniqid,
+            'callback_url' => url('users/get/deposit/complete/'.$uniqid.'')
+        ]);
+        if($paystack->successful()){
+          $data=$paystack->json();
+        }else{
+           return response()->json([
+            'message' => 'Could not initiate deposit,please try again...',
+            'status' => 'error'
+        ]);
+
+        }
+        return response()->json([
+            'message' => 'Deposit Request initiated successfully,redirecting to checkout...',
+            'status' => 'success',
+            'url' => $data['data']['authorization_url']
+        ]);
+
+     }
