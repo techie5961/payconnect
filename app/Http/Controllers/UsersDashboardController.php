@@ -101,7 +101,7 @@ class UsersDashboardController extends Controller
         $purchased->getCollection()->transform(function($each){
             $each->json=json_decode($each->json);
             $each->frame=Carbon::parse($each->date)->diffForHumans();
-            $each->next_income=Carbon::parse($each->date)->addDay()->format('d M Y, H:i:s');
+            $each->next_income=Carbon::parse($each->updated)->addDay()->format('d M Y, H:i:s');
             $each->expires=Carbon::parse($each->date)->addDays($each->json->cycle)->format('d M Y, H:i:s');
             return $each;
         });
