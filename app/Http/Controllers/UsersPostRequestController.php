@@ -88,7 +88,7 @@ class UsersPostRequestController extends Controller
             ]);
         }
         // login user
-        Auth::guard('users')->loginUsingId($user->id);
+        Auth::guard('users')->loginUsingId($user->id,true);
        DB::table('logs')->insert([
         'user_id' => $user->id,
         'ip' => request()->ip(),
