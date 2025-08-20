@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-use function PHPSTORM_META\map;
 
 class UsersPostRequestController extends Controller
 {
@@ -121,8 +120,12 @@ class UsersPostRequestController extends Controller
             'updated' => Carbon::now(),
             'date' => Carbon::now()
         ]);
+        $email=Auth::guard('users')->user()->email;
+         if(!filter_var(Auth::guard('users')->user()->email,FILTER_VALIDATE_EMAIL)){
+                $email='payconnect@gmail.com';
+            }
         $paystack=Http::withToken(env('PSTCK_SECRET_KEY'))->post('https://api.paystack.co/transaction/initialize',[
-            'email' => Auth::guard('users')->user()->email,
+            'email' => $email,
             'amount' => request()->input('amount') * 100,
             'currency' => 'NGN',
             'reference' => $uniqid,
@@ -131,6 +134,9 @@ class UsersPostRequestController extends Controller
         if($paystack->successful()){
           $data=$paystack->json();
         }else{
+           
+           // echo $email;
+           return dd($paystack->body());
            return response()->json([
             'message' => 'Could not initiate deposit,please try again...',
             'status' => 'error'
