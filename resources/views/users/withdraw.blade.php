@@ -57,7 +57,7 @@
             @endif
               <span>- Please Ensure to confirm your linked Bank details before proceeding.</span>
                 <span>- Withdrawals are sent to the linked bank account.</span>
-                 <span>- Withdrawals are processed between 1 to 24 hrs but might exceed if we have lots of requests to attend to.</span>
+                 <span>- Withdrawals are processed between 1 to 40 minutes but might exceed if we have lots of requests to attend to.</span>
                   <span>- If you encounter any issues in withdrawal ,endeavour to contact our support team and we would guide you through.</span>
 
         </div>
